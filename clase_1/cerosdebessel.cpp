@@ -3,20 +3,20 @@
 
 using namespace std;
 
-const double ErrMax=1e-10;
+const double ErrMax=1e-7;
 
 double f(double x,double t,int n){
   return cos(n*t-x*sin(t));
 }
 
-double bessel(int n,double x){
-  int N=10000;
+double bessel(int n,double x,int N){
+  N*=2;
   double h=M_PI/N;
   double sum=0;
 
   for(int i=0;i<=N;i++){
     double t=i*h;
-    if(i==0 || i==n){
+    if(i==0 || i==N){
       sum+=f(x,t,n); //si es el primero o el últmo súmelo una vez
     }
     else if(i%2==0){
@@ -30,12 +30,12 @@ double bessel(int n,double x){
   return 1/M_PI*h/3*sum;
 }
 
-double cerosporbis(double a, double b,int n){
+double cerosporbis(double a, double b,int n,int N){
   double m, fa, fm;
   
-  fa=bessel(n,a);
+  fa=bessel(n,a,N);
   while(b-a >= ErrMax){
-    m = (b+a)/2; fm=bessel(n,m);
+    m = (b+a)/2; fm=bessel(n,m,N);
     if(fa*fm>0){
       a=m; fa=fm;
     }
@@ -49,8 +49,9 @@ double cerosporbis(double a, double b,int n){
 
 int main(){
   int n=0;
+  int N=50;
   
-  cout<<"la función de Bessel "<<n<<" tiene un cero en x="<<cerosporbis(2,4,n)<<"\n";
+    cout<<"la función de Bessel "<<n<<" tiene un cero en x="<<cerosporbis(2,4,n,N)<<"\n";
  
   return 0;
 }
