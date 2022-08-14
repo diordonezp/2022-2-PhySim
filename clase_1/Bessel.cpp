@@ -3,7 +3,6 @@
 
 using namespace std;
 
-
 double f(double x,double t,int n){
   return cos(n*t-x*sin(t));
 }
@@ -15,7 +14,7 @@ double bessel(int n,double x,int N){
 
   for(int i=0;i<=N;i++){
     double t=i*h;
-    if(i==0 || i==n){
+    if(i==0 || i==N){
       sum+=f(x,t,n); //si es el primero o el últmo súmelo una vez
     }
     else if(i%2==0){
