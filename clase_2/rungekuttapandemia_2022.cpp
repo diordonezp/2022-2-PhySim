@@ -1,33 +1,84 @@
+/*programa de solución de sist. de N ecuaciones diferenciales lineales. de la forma
+  dx0/dt=f0(t,x)
+  dx1/dt=f1(t,x)   x=(x0,x1,x2,...)
+  dx2/dt=f2(t,x)   f=(f0(t,x),f1(t,x),f2(t,x),...)
+  .
+  .
+  .
+  Con el algoritmo rungekkuta:
+  se tiene el sist dx/dt=f(t,x)
+  se soluciona con pasos de tiempo dt en los que el vector x evoluciona a
+  x+dx
+*/
 #include<iostream>
 #include<cmath>
+#include<vector>
 
-const double omega=3;
-
-double f1(double t,double x1,double x2){
-  return -omega*omega*x2;
+//función f: dado el seleccionador i, f retorna fi la i-esima función del vector
+double f(double t,std::vector<double> x,int i){
+  if(i==0){
+    return x[1]; //función f0(t,x)
+  }
+  else if(i==1){
+    return -x[0]; //función f1(t,x)
+  }
+  /*else if(i==2){
+    return 2; //función f2(t,x)
+    }
+    else if(i==3){
+    return 3; //función f3(t,x)
+    } */
 }
 
-double f2(double t,double x1, double x2){
-  return x1;
-}
 
-void Unpasoderkuta(double &t,double &x1,double &x2,double &x3,double &dt){
-  double dx11=dt*f1(t,x1,x2,x3);                    double dx12=dt*f2(t,x1,x2);                    double dx13=dt*f2(t,x1,x2);
-  double dx21=dt*f1(t+dt/2,x1+dx11/2,x2+dx12/2); double dx22=dt*f2(t+dt/2,x1+dx11/2,x2+dx12/2); double dx23=dt*f2(t+dt/2,x1+dx11/2,x2+dx12/2);
-  double dx31=dt*f1(t+dt/2,x1+dx21/2,x2+dx22/2); double dx32=dt*f2(t+dt/2,x1+dx12/2,x2+dx22/2); double dx33=dt*f2(t+dt/2,x1+dx12/2,x2+dx22/2);
-  double dx41=dt*f1(t+dt,x1+dx31,x2+dx32);       double dx42=dt*f2(t+dt,x1+dx31,x2+dx32);       double dx43=dt*f2(t+dt,x1+dx31,x2+dx32);
-  
-  x1+=(dx11+2*dx21+2*dx31+dx41)/6;                     x2+=(dx12+2*dx22+2*dx32+dx42)/6;
-  t+=dt;
+/*función del paso de rungekutta: dado un vector x inicial, un tiempo inicial
+  y el paso de tiempo dt*/
+void Unpasoderkutta(double &t,double dt,std::vector<double> &x){
+  std::vector<double> dx1(x.size()),dx2(x.size()),dx3(x.size()),dx4(x.size()),aux(x.size());
+
+  for(int i=0;i<x.size();i++){
+    dx1[i]=dt*f(t,x,i); //dx1 para todas las variables
+  }
+  for(int i=0;i<x.size();i++){
+    aux[i]=x[i]+dx1[i]/2; //aux guarda x+dx1/2 para todas las variables, para obtener dx2
+  }
+  for(int i=0;i<x.size();i++){
+    dx2[i]=dt*f(t+dt/2,aux,i); //dx2 para todas las variables
+  }
+  for(int i=0;i<x.size();i++){
+    aux[i]=x[i]+dx2[i]/2; //aux guarda x+dx2/2 para todas las variables, para obtener dx2
+  }
+  for(int i=0;i<x.size();i++){
+    dx3[i]=dt*f(t+dt/2,aux,i); //dx3 para todas las variables
+  }
+  for(int i=0;i<x.size();i++){
+    aux[i]=x[i]+dx3[i]; //aux guarda x+dx3 para todas las variables, para obtener dx2
+  }
+  for(int i=0;i<x.size();i++){
+    dx4[i]=dt*f(t+dt,aux,i); //dx4 para todas las variables
+  }
+
+  for(int i=0;i<x.size();i++){
+    x[i]+=(dx1[i]+2*(dx2[i]+dx3[i])+dx4[i])/6; //actualización del xi para todas las variables 
+  }
+  t+=dt; //actualización del dt
 }
 
 int main(){
-  double t=0,x1=1, x2=0, dt=0.01;
-  
-  for(t;t<7;){
-    std::cout<<t<<"\t"<<x1<<"\t"<<x2<<"\n";
-    Unpasoderkuta(t,x1,x2,dt);
+  //cond. iniciales, paso de tiempo dt y tiempo final para el que se quiere hacer la simulación
+  double t=0,
+    x0=1,
+    x1=0,
+    dt=0.01,
+    T=10;
+  std::vector<double> x={x0,x1};
+
+  for(t;t<T;){
+    for(int j=0;j<x.size();j++){
+      std::cout<<t<<"\t"<<x[0]<<"\t"<<x[1]<<"\n";
+      Unpasoderkutta(t,dt,x);
+    }
   }
-   
+  
   return 0;
 }
