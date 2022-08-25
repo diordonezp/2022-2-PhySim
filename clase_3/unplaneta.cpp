@@ -44,7 +44,7 @@ int main(){
   //----------(x0,y0,Vx0,Vy0,m0,R0)
   Planeta.Inicie( r0, 0, 0, V0/2, 0.45, 0.15);
   for(t=0;t<1.1*T;t+=dt){
-    cout<<Planeta.Getx()<<" "<<Planeta.Gety()<<endl;
+    cout<<Planeta.Getx()<<" "<<Planeta.Gety()<<"\n";
     Planeta.CalculeFuerza();
     Planeta.Muevase(dt);
   }
