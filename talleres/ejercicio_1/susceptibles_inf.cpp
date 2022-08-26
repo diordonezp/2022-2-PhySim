@@ -65,7 +65,7 @@ void Unpasoderkutta(double &t,double dt,std::vector<double> &x,double beta, doub
   t+=dt; //actualización del dt
 }
 
-double susceptibles(double beta){
+double susceptibles(double beta,double T){
   //cond. iniciales y parámetros
   double
     x0=0.999,   //esta variable es s: los susceptibles
@@ -73,7 +73,6 @@ double susceptibles(double beta){
     x2=0,       //esta variable es r: los recuperados/muertos
     dt=0.001,   //paso de tiempo
     t=0,        //tiempo inicial
-    T=100,      //tiempo final
     gamma=0.08; //prob de sanarse
   std::vector<double> x={x0,x1,x2};
 
@@ -85,10 +84,11 @@ double susceptibles(double beta){
 }
 
 int main(void){
-  double beta=0.1;
+  double beta=0;
   double dbeta=0.01;
+  double T=200;
   
   for(beta;beta<1;beta+=dbeta){
-    std::cout<<beta/0.08<<"\t"<<susceptibles(beta)<<"\n";
+    std::cout<<beta/0.08<<"\t"<<susceptibles(beta,T)<<"\n";
   }
 }
