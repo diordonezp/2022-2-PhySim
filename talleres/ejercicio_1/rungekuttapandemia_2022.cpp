@@ -74,7 +74,7 @@ int main(){
     dt=0.001,   //paso de tiempo
     t=0,        //tiempo inicial
     T=100,      //tiempo final
-    beta=0.1,  //prob de infección entre s y i
+    beta=0.35,  //prob de infección entre s y i
     gamma=0.08; //prob de sanarse
   std::vector<double> x={x0,x1,x2};
 
