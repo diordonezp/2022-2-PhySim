@@ -63,12 +63,12 @@ void Unpasoderkutta(double &t,double dt,std::vector<double> &x,double lambda){
 int main(){
   //cond. iniciales y parámetros
   double
-    x0=1,     //x0 es R
-    x1=0,     //x1 es la derivada dR/dr de la ec. de bessel
+    x0=1,      //x0 es R
+    x1=0,      //x1 es la derivada dR/dr de la ec. de bessel
     dr=0.0001, //paso de radio
-    r=0.01,   //radio inicial
-    R=10,     //radio  final
-    lambda=1; //parámetro lambda
+    r= 0.01,   //radio inicial
+    R=10,      //radio  final
+    lambda=1;  //parámetro lambda
   std::vector<double> x={x0,x1};
   int N=(R-r)/dr;
   
