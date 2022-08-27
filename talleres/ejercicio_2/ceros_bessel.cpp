@@ -71,6 +71,7 @@ double R(double rf,double lambda){
     r=0.01;    //radio inicial
   std::vector<double> x={x0,x1};
   int N=(rf-r)/dr;
+
   
   for(int i=0;i<=N;i++){
     Unpasoderkutta(r,dr,x,lambda);

@@ -20,7 +20,7 @@ double f(double r,std::vector<double> x,double lambda,int i){
     return x[1]; //función f0(t,x)
   }
   else if(i==1){
-    return -x[1]/r-lambda*lambda*x[0]; //función f1(t,x)
+    return -x[1]/r-std::pow(lambda,2)*x[0]; //función f1(t,x)
   }
 
   return 0;
@@ -81,7 +81,7 @@ double R(double rf,double lambda){
 
 double cerosporbis(double a, double b,double rf){
   double m, fa, fm;
-  double ErrMax=1e-7;
+  double ErrMax=1e-10;
   
   fa=R(rf,a);
   while(b-a >= ErrMax){
