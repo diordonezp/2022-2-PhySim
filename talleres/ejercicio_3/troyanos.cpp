@@ -17,9 +17,11 @@ const double coef2=1-2*(Chi+Xi);
 /*Clase Cuerpo: objeto que guarda las coordenadas r,v,F,m y R (radio) de cada cuerpo
   del sistema
   rutinas: Init=>inicia las variables del cuerpo
-           print=>printea en pantalla todas las variables de cuerpo
-           Paso_t=>evoluciona las varibles del cuerpo integrando por el método x
+           print=>printea en pantalla la posición del cuerpo
+	   printv=>printea en pantalla la velocidad del cuerpo
+   	   printF=>printea en pantalla la Fuerza del cuerpo
 */
+
 class Cuerpo{
 private:
   vector3D r,v,F;
@@ -30,15 +32,16 @@ public:
   void Init(double x0,double y0,double z0,
 	    double vx0,double vy0,double vz0,
 	    double m0,double R0);
-  //printea las variables r del cuerpo
-  void print();
+  //printea las variables del cuerpo
+  void printr();
+  void printv();
   void printF();
-  
 
   friend class Colisionador;
 };
 
 //Implementaciones de Cuerpo
+
 void Cuerpo::Init(double x0,double y0,double z0,
 		  double vx0,double vy0,double vz0,
 		  double m0,double R0){
@@ -46,29 +49,37 @@ void Cuerpo::Init(double x0,double y0,double z0,
   m=m0; R=R0;
 }
 
-void Cuerpo::print(){
+void Cuerpo::printr(){
   std::cout<<r.x()<<"\t"<<r.y()<<"\t"<<r.z()<<"\t";
 }
 
-void Cuerpo::printF(){
-  F.show();
+void Cuerpo::printv(){
+  std::cout<<v.x()<<"\t"<<v.y()<<"\t"<<v.z()<<"\t";
 }
+
+void Cuerpo::printF(){
+  std::cout<<F.x()<<"\t"<<F.y()<<"\t"<<F.z()<<"\t";
+}
+
 //-----------------------------------------------------------------------------------
 
 /*Clase Colisionador: accede a las variables privadas de los cuerpos de un sistema
-  (vector de cuerpos)y calcula las fuerzas de cada cuerpo.
+  (vector de cuerpos) y calcula las fuerzas de cada cuerpo. También evoluciona un
+  paso en el teimpo usando PEFRL.
  */
+
 class Colisionador{
 public:
   //calcula y asiga a cada cuerpo del sistema la fuerza que debe sentir
   void Fuerza_syst(std::vector<Cuerpo> &syst);
   //calcula solo la fuerza entre dos cuerpos del sistema
   void F_entre(Cuerpo &c1,Cuerpo &c2);
-  //Ejecuta el paso en el tiempo con una integración
-  void Paso_syst(std::vector<Cuerpo> &syst,double dt,Colisionador G);
+  //Ejecuta el paso en el tiempo con una integración PEFRL
+  void Paso_syst(std::vector<Cuerpo> &syst,double dt);
 };
 
 //Implementaciones de Colisionador
+
 void Colisionador::Fuerza_syst(std::vector<Cuerpo> &syst){
   for(int i=0;i<syst.size();i++){
     syst[i].F.load(0,0,0);
@@ -86,34 +97,32 @@ void Colisionador::F_entre(Cuerpo &c1,Cuerpo &c2){
   c1.F+=F*r21; c2.F+=-F*r21;
 }
 
-/*El coliaionador en el paso de tiempo se llama a sí mismo para calcular las fuerzas
-  siempre que es necesario. Se usa el algoritmo PEFRL*/
-void Colisionador::Paso_syst(std::vector<Cuerpo> &syst,double dt,Colisionador G){
+void Colisionador::Paso_syst(std::vector<Cuerpo> &syst,double dt){
   for(int i=0;i<syst.size();i++){
     syst[i].r+=Xi*dt*syst[i].v;
   }
-  G.Fuerza_syst(syst);
+  Fuerza_syst(syst);
   for(int i=0;i<syst.size();i++){
     syst[i].v+=coef1*dt*syst[i].F/syst[i].m;
   }
   for(int i=0;i<syst.size();i++){
     syst[i].r+=Chi*dt*syst[i].v;
   }
-  G.Fuerza_syst(syst);
+  Fuerza_syst(syst);
   for(int i=0;i<syst.size();i++){
     syst[i].v+=Lambda*dt*syst[i].F/syst[i].m;
   }
   for(int i=0;i<syst.size();i++){
     syst[i].r+=coef2*dt*syst[i].v;
   }
-  G.Fuerza_syst(syst);
+  Fuerza_syst(syst);
   for(int i=0;i<syst.size();i++){
     syst[i].v+=Lambda*dt*syst[i].F/syst[i].m;
   }
   for(int i=0;i<syst.size();i++){
     syst[i].r+=Chi*dt*syst[i].v;
   }
-  G.Fuerza_syst(syst);
+  Fuerza_syst(syst);
   for(int i=0;i<syst.size();i++){
     syst[i].v+=coef1*dt*syst[i].F/syst[i].m;
   }
@@ -131,8 +140,8 @@ int main(){
   std::vector<Cuerpo> syst(N); //creación de sistema=>un vector de cuerpos
   Colisionador Gravity; //el colisionador=>la gravedad
 
-  double t;
-  double m0=10,m1=1,omega, r0=1,V0,V1, T;
+  //condiciones iniciales
+  double m0=1047,m1=1,omega, r0=1000,V0,V1, T;
   double M=m0+m1;
   double x0=-m1*r0/M;
   double x1=m0*r0/M;
@@ -142,9 +151,9 @@ int main(){
   syst[0].Init( x0, 0.0, 0.0, 0.0, V0, 0.0, m0, 0.15);
   syst[1].Init( x1, 0.0, 0.0, 0.0, V1, 0.0, m1, 0.15);
   
-  for(t=0;t<2*T;t+=dt){
-    syst[0].print();syst[1].print();std::cout<<"\n";
-    Gravity.Paso_syst(syst,dt,Gravity);
+  for(double t=0;t<2*T;t+=dt){
+    syst[0].printr();syst[1].printr();std::cout<<"\n";
+    Gravity.Paso_syst(syst,dt);
   }
   return 0;
 }
