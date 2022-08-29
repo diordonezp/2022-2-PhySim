@@ -32,6 +32,8 @@ public:
 	    double m0,double R0);
   //printea las variables r del cuerpo
   void print();
+  void printF();
+  
 
   friend class Colisionador;
 };
@@ -47,6 +49,10 @@ void Cuerpo::Init(double x0,double y0,double z0,
 void Cuerpo::print(){
   std::cout<<r.x()<<"\t"<<r.y()<<"\t"<<r.z()<<"\t";
 }
+
+void Cuerpo::printF(){
+  F.show();
+}
 //-----------------------------------------------------------------------------------
 
 /*Clase Colisionador: accede a las variables privadas de los cuerpos de un sistema
@@ -57,7 +63,7 @@ public:
   //calcula y asiga a cada cuerpo del sistema la fuerza que debe sentir
   void Fuerza_syst(std::vector<Cuerpo> &syst);
   //calcula solo la fuerza entre dos cuerpos del sistema
-  void F_entre(Cuerpo c1,Cuerpo c2);
+  void F_entre(Cuerpo &c1,Cuerpo &c2);
   //Ejecuta el paso en el tiempo con una integración
   void Paso_syst(std::vector<Cuerpo> &syst,double dt,Colisionador G);
 };
@@ -68,10 +74,20 @@ void Colisionador::Fuerza_syst(std::vector<Cuerpo> &syst){
     syst[i].F.load(0,0,0);
   }
   for(int i=0;i<syst.size();i++){
-    syst[i].F=(-G*syst[i].m*std::pow(syst[i].r.norm(),-3))*syst[i].r;
+    for(int j=i+1;j<syst.size();j++){
+      F_entre(syst[i],syst[j]);
+    }
   }
 }
 
+void Colisionador::F_entre(Cuerpo &c1,Cuerpo &c2){
+  vector3D r21=c2.r-c1.r;
+  double F=G*c1.m*c2.m*std::pow(r21.norm(),-3);
+  c1.F+=F*r21; c2.F+=-F*r21;
+}
+
+/*El coliaionador en el paso de tiempo se llama a sí mismo para calcular las fuerzas
+  siempre que es necesario. Se usa el algoritmo PEFRL*/
 void Colisionador::Paso_syst(std::vector<Cuerpo> &syst,double dt,Colisionador G){
   for(int i=0;i<syst.size();i++){
     syst[i].r+=Xi*dt*syst[i].v;
@@ -109,25 +125,26 @@ void Colisionador::Paso_syst(std::vector<Cuerpo> &syst,double dt,Colisionador G)
 //-----------------------------------------------------------------------------------
 
 int main(){
-  int N=1; //número de cuerpos
-  double dt=0.001; //paso de tiempo
-  //Condiciones iniciales
-  double R=1;
-  double m=0.45;
-  double x0=10;
-  double y0=0;
-  double z0=0;
-  double vx0=0;
-  double vy0=std::sqrt(G*std::pow(x0,-3))*x0;
-  double vz0=0;
-  std::vector<Cuerpo> syst(N); //creación de sistema=>un vector de cuerpos
-  Colisionador G; //el colisionador=>la gravedad
-
-  syst[0].Init(x0,y0,z0,vx0,vy0,vz0,m,R);
-  for(double t=0;t<4*M_PI*x0/vy0;t+=dt){
-    syst[0].print();std::cout<<"\n";
-    G.Paso_syst(syst,dt,G);
-  }
+  int N=2; //número de cuerpos
+  double dt=0.01; //paso de tiempo
   
+  std::vector<Cuerpo> syst(N); //creación de sistema=>un vector de cuerpos
+  Colisionador Gravity; //el colisionador=>la gravedad
+
+  double t;
+  double m0=10,m1=1,omega, r0=1,V0,V1, T;
+  double M=m0+m1;
+  double x0=-m1*r0/M;
+  double x1=m0*r0/M;
+  omega=std::sqrt(G*M*pow(r0,-3)); V0=omega*x0; V1=omega*x1; T=2*M_PI/omega;
+  
+  //----------(x0,y0,z0,Vx0,Vy0,Vz0,m0,R0)
+  syst[0].Init( x0, 0.0, 0.0, 0.0, V0, 0.0, m0, 0.15);
+  syst[1].Init( x1, 0.0, 0.0, 0.0, V1, 0.0, m1, 0.15);
+  
+  for(t=0;t<2*T;t+=dt){
+    syst[0].print();syst[1].print();std::cout<<"\n";
+    Gravity.Paso_syst(syst,dt,Gravity);
+  }
   return 0;
 }
