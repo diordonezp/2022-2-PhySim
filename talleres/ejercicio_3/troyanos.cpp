@@ -1,3 +1,4 @@
+
 #include<iostream>
 #include<cmath>
 #include<vector>
@@ -135,7 +136,7 @@ void Colisionador::Paso_syst(std::vector<Cuerpo> &syst,double dt){
 
 int main(){
   int N=2; //número de cuerpos
-  double dt=0.01; //paso de tiempo
+  double dt=0.1; //paso de tiempo
   
   std::vector<Cuerpo> syst(N); //creación de sistema=>un vector de cuerpos
   Colisionador Gravity; //el colisionador=>la gravedad
