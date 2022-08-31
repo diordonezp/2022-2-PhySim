@@ -60,6 +60,8 @@ class vector3D{
   double norm(void);
   //Angle between two vectors
   friend double angle(vector3D v1, vector3D v2);
+
+  friend class matrix3D;
 };
 //--------------------------------------
 //  vector class functions 
@@ -162,4 +164,31 @@ double vector3D::norm(void){
 double angle(vector3D v1, vector3D v2)
 {
   return std::acos((v1.X*v2.X+v1.Y*v2.Y+v1.Z*v2.Z)/(std::sqrt(v1.X*v1.X+v1.Y*v1.Y+v1.Z*v1.Z)*std::sqrt(v2.X*v2.X+v2.Y*v2.Y+v2.Z*v2.Z)));
+}
+
+//clase de matrices amiga de vectores para definir producto por escalar
+class matrix3D{
+private:
+  double a11,a12,a13,a21,a22,a23,a31,a32,a33;
+
+public:
+  //initialize of matrix
+  void load(double A11,double A12,double A13,double A21,double A22,double A23,double A31,double A32,double A33);
+  //Show the matrix
+  void show(void);
+  //operation prod by vector
+  vector3D operator*(vector3D v);
+};
+//implementaciones de la clase matrix3D
+
+//initilize the matix
+void matrix3D::load(double A11,double A12,double A13,double A21,double A22,double A23,double A31,double A32,double A33){
+  a11=A11;a12=A12;a13=A13;
+  a21=A21;a22=A22;a23=A23;
+  a31=A31;a32=A32;a33=A33;
+}
+
+//show the matrix
+void matrix3D::show(void){
+  
 }
