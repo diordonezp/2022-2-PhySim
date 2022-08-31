@@ -190,5 +190,19 @@ void matrix3D::load(double A11,double A12,double A13,double A21,double A22,doubl
 
 //show the matrix
 void matrix3D::show(void){
-  
+  std::cout<<"("<<a11<<","<<a12<<","<<a13<<")"<<"\n";
+  std::cout<<"("<<a21<<","<<a22<<","<<a23<<")"<<"\n";
+  std::cout<<"("<<a31<<","<<a32<<","<<a33<<")"<<"\n";
+}
+
+//multiplication by vector
+vector3D matrix3D::operator*(vector3D v){
+  vector3D prod;
+  double v1=a11*v.X+a12*v.Y+a13*v.Z;
+  double v2=a21*v.X+a22*v.Y+a23*v.Z;
+  double v3=a31*v.X+a32*v.Y+a33*v.Z;
+
+  prod.load(v1,v2,v3);
+
+  return prod;
 }
