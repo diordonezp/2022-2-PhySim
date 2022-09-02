@@ -150,7 +150,8 @@ int main(){
   //----------(x0,y0,z0,Vx0,Vy0,Vz0,m0,R0)
   syst[0].Init( x0, 0.0, 0.0, 0.0, V0, 0.0, m0, 0.15);
   syst[1].Init( x1, 0.0, 0.0, 0.0, V1, 0.0, m1, 0.15);
-  
+
+  //---------------20*T. Cambiar para presentar 
   for(double t=0;t<2*T;t+=dt){
     syst[0].printr();syst[1].printr();std::cout<<"\n";
     Gravity.Paso_syst(syst,dt);
