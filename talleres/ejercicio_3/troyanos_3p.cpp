@@ -73,6 +73,8 @@ class Colisionador{
 public:
   //calcula y asiga a cada cuerpo del sistema la fuerza que debe sentir
   void Fuerza_syst(std::vector<Cuerpo> &syst,double omega);
+  //Calcula solo las fuerzas ficticias (de inercia) que debe sentir cada cuerpo
+  void Ficti_syst(std::vector<Cuerpo> &syst,double omega);
   //calcula solo la fuerza entre dos cuerpos del sistema
   void F_entre(Cuerpo &c1,Cuerpo &c2,double omega);
   //Ejecuta el paso en el tiempo con una integración PEFRL
@@ -90,14 +92,21 @@ void Colisionador::Fuerza_syst(std::vector<Cuerpo> &syst,double omega){
       F_entre(syst[i],syst[j],omega);
     }
   }
+  Ficti_syst(syst,omega);
+}
+
+void Colisionador::Ficti_syst(std::vector<Cuerpo> &syst,double omega){
+  vector3D v_o;
+  v_o.load(0,0,omega);
+  for(int i=0;i<syst.size();i++){
+    syst[i].F+=-2*syst[i].m*(v_o^syst[i].v)-syst[i].m*(v_o^(v_o^syst[i].r)); 
+  }
 }
 
 void Colisionador::F_entre(Cuerpo &c1,Cuerpo &c2,double omega){
-  vector3D r21=c2.r-c1.r,v_o;
-  v_o.load(0,0,omega);
+  vector3D r21=c2.r-c1.r;
   double F=G*c1.m*c2.m*std::pow(r21.norm(),-3);
-  c1.F+=F*r21-2*c1.m*(v_o^c1.v)-c1.m*(v_o^(v_o^c1.r));
-  c2.F+=-F*r21-2*c2.m*(v_o^c2.v)-c2.m*(v_o^(v_o^c2.r));
+  c1.F+=F*r21; c2.F+=-F*r21;
 }
 
 void Colisionador::Paso_syst(std::vector<Cuerpo> &syst,double dt,double omega){
@@ -137,14 +146,14 @@ void Colisionador::Paso_syst(std::vector<Cuerpo> &syst,double dt,double omega){
 //-----------------------------------------------------------------------------------
 
 int main(){
-  int N=2; //número de cuerpos
+  int N=3; //número de cuerpos
   double dt=0.1; //paso de tiempo
   
   std::vector<Cuerpo> syst(N); //creación de sistema=>un vector de cuerpos
   Colisionador Gravity; //el colisionador=>la gravedad
 
   //condiciones iniciales
-  double m0=1047,m1=1,m3=0.005,r0=1000,omega,V0,V1,T;
+  double m0=1047,m1=1,m2=0.005,r0=1000,omega,V0,V1,T;
   double M=m0+m1;
   double x0=-m1*r0/M;
   double x1=m0*r0/M;
@@ -153,10 +162,9 @@ int main(){
   //----------(x0,y0,z0,Vx0,Vy0,Vz0,m0,R0)
   syst[0].Init( x0, 0.0, 0.0, 0.0, 0.0, 0.0, m0, 0.15);
   syst[1].Init( x1, 0.0, 0.0, 0.0, 0.0, 0.0, m1, 0.15);
-  //syst[2].Init( x1*std::cos(M_PI/3),x1*std::sin(M_PI/3), 0.0,
-  //		-V1*std::sin(M_PI/3), V1*std::cos(M_PI/3), 0.0, m1, 0.15);
+  syst[2].Init( x1*std::cos(M_PI/3),x1*std::sin(M_PI/3),0.0,0.0, 0.0,0.0, m2, 0.15);
   
-  for(double t=0;t<2*T;t+=dt){
+  for(double t=0;t<20*T;t+=dt){
     for(int i=0;i<syst.size();i++){
       syst[i].printr();
     }
