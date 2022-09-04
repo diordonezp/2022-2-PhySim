@@ -38,7 +38,6 @@ public:
   void printF();
 
   friend class Colisionador;
-  friend void print_rot_syst(std::vector<Cuerpo> syst,double alpha);
 };
 
 //Implementaciones de Cuerpo
@@ -76,7 +75,7 @@ public:
   //Calcula solo las fuerzas ficticias (de inercia) que debe sentir cada cuerpo
   void Ficti_syst(std::vector<Cuerpo> &syst,double omega);
   //calcula solo la fuerza entre dos cuerpos del sistema
-  void F_entre(Cuerpo &c1,Cuerpo &c2,double omega);
+  void F_entre(Cuerpo &c1,Cuerpo &c2);
   //Ejecuta el paso en el tiempo con una integración PEFRL
   void Paso_syst(std::vector<Cuerpo> &syst,double dt,double omega);
 };
@@ -89,7 +88,7 @@ void Colisionador::Fuerza_syst(std::vector<Cuerpo> &syst,double omega){
   }
   for(int i=0;i<syst.size();i++){
     for(int j=i+1;j<syst.size();j++){
-      F_entre(syst[i],syst[j],omega);
+      F_entre(syst[i],syst[j]);
     }
   }
   Ficti_syst(syst,omega);
@@ -103,7 +102,7 @@ void Colisionador::Ficti_syst(std::vector<Cuerpo> &syst,double omega){
   }
 }
 
-void Colisionador::F_entre(Cuerpo &c1,Cuerpo &c2,double omega){
+void Colisionador::F_entre(Cuerpo &c1,Cuerpo &c2){
   vector3D r21=c2.r-c1.r;
   double F=G*c1.m*c2.m*std::pow(r21.norm(),-3);
   c1.F+=F*r21; c2.F+=-F*r21;
@@ -153,16 +152,17 @@ int main(){
   Colisionador Gravity; //el colisionador=>la gravedad
 
   //condiciones iniciales
-  double m0=1047,m1=1,m2=0.005,r0=1000,omega,V0,V1,T;
+  double m0=1047,m1=1,m2=0.005,r0=1000,omega,T;
   double M=m0+m1;
   double x0=-m1*r0/M;
   double x1=m0*r0/M;
-  omega=std::sqrt(G*M*pow(r0,-3)); V0=omega*x0; V1=omega*x1; T=2*M_PI/omega;
+  omega=std::sqrt(G*M*pow(r0,-3));
+  T=2*M_PI/omega;
   
   //----------(x0,y0,z0,Vx0,Vy0,Vz0,m0,R0)
   syst[0].Init( x0, 0.0, 0.0, 0.0, 0.0, 0.0, m0, 0.15);
   syst[1].Init( x1, 0.0, 0.0, 0.0, 0.0, 0.0, m1, 0.15);
-  syst[2].Init( x1*std::cos(M_PI/3),x1*std::sin(M_PI/3),0.0,0.0, 0.0,0.0, m2, 0.15);
+  syst[2].Init( x0+r0*0.5,r0*std::sqrt(3.0)/2.0,0.0,0.0,0.0,0.0,m2,0.15);
   
   for(double t=0;t<20*T;t+=dt){
     for(int i=0;i<syst.size();i++){
