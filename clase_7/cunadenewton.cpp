@@ -98,7 +98,7 @@ void InicieAnimacion(void){
   cout<<"set parametric"<<endl; //que sea una figura parametrizca x(t), y(t)
   cout<<"set trange [0:7]"<<endl; //rango de t
   cout<<"set isosamples 12"<<endl; //rango de t dividido en 12 puntos
-  //cout<<"set terminal dumb"<<endl;
+  cout<<"set terminal dumb"<<endl;
 }
 
 void InicieCuadro(void){
@@ -106,7 +106,7 @@ void InicieCuadro(void){
 }
 
 void TermineCuadro(void){
-  //cout<<"\n"<<"pause 0.01";
+  cout<<"\n"<<"pause 0.01";
   cout<<endl;
 }
 
