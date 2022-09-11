@@ -152,7 +152,7 @@ void Colisionador::Paso_syst(std::vector<Cuerpo> &syst,double dt){
 //-----------------------------------------------------------------------------------
 
 void Init_animation(double lx,double ly){
-  std::cout<<"set terminal gif\n";
+  std::cout<<"set terminal gif animate\n";
   std::cout<<"set output 'balones.gif'\n";
   std::cout<<"set nokey\n";
   std::cout<<"set size ratio -1\n";
@@ -160,7 +160,7 @@ void Init_animation(double lx,double ly){
   std::cout<<"set yrange[-1:"<<ly<<"+1]\n";
   std::cout<<"set parametric\n";
   std::cout<<"set trange[0:1]\n";
-  std::cout<<"set isosamples 12\n";
+  std::cout<<"set isosamples 20\n";
   //std::cout<<"set terminal dumb 74 37\n";
 }
 
@@ -175,8 +175,8 @@ void End_frame(){
 
 int main(){
   /*---variables de simulación---*/
-  int Nx=2;             //número de cuerpos en la primera fila x
-  int Ny=1;             //número de cuerpos en la primera fila y
+  int Nx=3;             //número de cuerpos en la primera fila x
+  int Ny=3;             //número de cuerpos en la primera fila y
   int N=Nx*Ny;          //número de cuerpos totales
   double t=0;           //tiempo inicial
   double tmax=30;       //tiempo final
