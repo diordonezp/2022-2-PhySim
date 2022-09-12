@@ -4,7 +4,8 @@
 #include"vector.h"
 
 //Constantes globables de simulación
-const double K=1e9; //Cte de fuerza de hertz
+const double K=1e6; //Cte de fuerza de hertz
+const double Gamma=100;//Cte gamma de fuerza plástica
 const double g=9.8; //aceleración gravitacional
 
 //constantes globales de integración
@@ -83,12 +84,15 @@ void Colisionador::Fuerza_syst(std::vector<Cuerpo> &syst){
     syst[i].tau=0;
     
   }
+  
+  //fuerza entre cuerpos
   for(int i=0;i<syst.size();i++){
     for(int j=i+1;j<syst.size();j++){
       F_entre(syst[i],syst[j]);
     }
   }
 
+  //fuerza de gravedad
   for(int i=0;i<syst.size();i++){
     vector3D Fg; Fg.load(0,-syst[i].m*g,0);
     syst[i].F+=Fg;
@@ -97,10 +101,29 @@ void Colisionador::Fuerza_syst(std::vector<Cuerpo> &syst){
 
 void Colisionador::F_entre(Cuerpo &c1,Cuerpo &c2){
   vector3D r21=c2.r-c1.r;
-  double s=c1.R+c2.R-r21.norm();
-  if(s>0){
+  double s=c1.R+c2.R-r21.norm(); //interpenetración entre cuerpos
+  
+  if(s>0){ 
+    /*---fuerza de hertz---*/
     double F=K*std::pow(s,1.5)/r21.norm();
     c2.F+=F*r21; c1.F+=-F*r21;
+    /*---fuerza plástica---*/
+    vector3D v21=c2.v-c1.v;
+    double m21=c2.m*c1.m/(c2.m+c1.m);
+    vector3D F2=-Gamma*std::sqrt(s)*m21*v21;
+    c2.F+=F2; c1.F-=F2;
+
+
+
+    /*---EN CASO DE QUE EL PROFE SE EQUIVOQUE---*/
+    /*---fuerza de hertz---*/
+    //double F=K*std::pow(s,1.5)/r21.norm();
+    /*---fuerza plástica---*/
+    //vector3D v21=c2.v-c1.v;
+    //double m21=c2.m*c1.m/(c2.m+c1.m);
+    //F+=-Gamma*std::sqrt(s)*m21*(v21*r21/r21.norm2());
+    
+    //c2.F+=F*r21; c1.F+=-F*r21;
   }
 }
 
@@ -153,7 +176,7 @@ void Colisionador::Paso_syst(std::vector<Cuerpo> &syst,double dt){
 
 void Init_animation(double lx,double ly){
   std::cout<<"set terminal gif animate\n";
-  std::cout<<"set output 'balones.gif'\n";
+  std::cout<<"set output 'balones_fric.gif'\n";
   std::cout<<"set nokey\n";
   std::cout<<"set size ratio -1\n";
   std::cout<<"set xrange[-1:"<<lx<<"+1]\n";
@@ -175,14 +198,14 @@ void End_frame(){
 
 int main(){
   /*---variables de simulación---*/
-  int Nx=3;             //número de cuerpos en la primera fila x
-  int Ny=3;             //número de cuerpos en la primera fila y
-  int N=Nx*Ny;          //número de cuerpos totales
-  double t=0;           //tiempo inicial
-  double tmax=30;       //tiempo final
-  double dt=1e-5;       //paso de tiempo
-  double m=5;           //masa de los cuerpos
-  double R=2;           //radio de los cuerpos
+  int Nx=3;               //número de cuerpos en la primera fila x
+  int Ny=3;               //número de cuerpos en la primera fila y
+  int N=Nx*Ny;            //número de cuerpos totales
+  double t=0;             //tiempo inicial
+  double tmax=20;         //tiempo final
+  double dt=1e-5;         //paso de tiempo
+  double m=5;             //masa de los cuerpos
+  double R=2;             //radio de los cuerpos
   double lx=(2*Nx+1)*2*R; //lado x de la caja
   double ly=(2*Ny+1)*2*R; //lado y de la caja
   
@@ -190,7 +213,7 @@ int main(){
   double t1=0;        //timepo auxiliar
   double t_frame=0.1; //tiempo entres frames
 
-  /*---variables de inicialización de la simulación ---*/
+  /*---variables de inicialización de la simulación---*/
   std::vector<Cuerpo> syst(N+4);
   Colisionador Newton;
 
@@ -206,6 +229,7 @@ int main(){
       syst[Ny*i+j].Init((3+4*i)*R,(3+4*j)*R,0,0,0,0,0,1,m,R);
     }
   }
+  
   
   Init_animation(lx,ly);
   
