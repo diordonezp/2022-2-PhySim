@@ -1,20 +1,14 @@
-//A C++ fast and lightweight 3D vector library.
-//Optimized to be as fast as possible maintaining great usability.
-/* 
+/*
+A C++ fast and lightweight 3D vector library.
+Optimized to be as fast as possible maintaining great usability.
+ 
  * This file is part of the Vector3D distribution (https://github.com/cdelv/Vector3D).
  * Copyright (c) 2022 Carlos Andres del Valle.
  * 
- * This program is free software: you can redistribute it and/or modify  
- * it under the terms of the GNU General Public License as published by  
- * the Free Software Foundation, version 3.
+ *Vector3D is under the terms of the BSD-3 license. We welcome feedback and contributions.
  *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License 
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the BSD3 Public License 
+ * along with this program. If not, see <https://github.com/cdelv/Vector3D> LICENSE.
  */
 
 #include <iostream>
@@ -25,184 +19,143 @@ class vector3D{
   double X, Y, Z;
 
  public:
+  //Constructors
+  vector3D(void){this->X=0; this->Y=0; this->Z=0;};
+  vector3D(double x0, double y0, double z0){this->X=x0; this->Y=y0; this->Z=z0;};
+  vector3D(vector3D *V){this->X=V->X; this->Y=V->Y; this->Z=V->Z;};
+  //Destructor
+  ~vector3D(){};
   //Initialize the vector
-  void load(double x0, double y0, double z0);
+  void load(double x0, double y0, double z0){X=x0; Y=y0; Z=z0;};
   //Get the components
   double x(void){return X;};
   double y(void){return Y;};
   double z(void){return Z;};
   //Show the vector
-  void show(void);
+  void show(void){std::cout <<"("<<X<<","<<Y<<","<<Z<<")\n";};
   //-------------------------
   //Vectorial operators
   //-------------------------
   //Equal
-  void operator= (vector3D v2);
+  vector3D& operator=(vector3D *V){
+    this->X=V->X;
+    this->Y=V->Y;
+    this->Z=V->Z;
+    return *this;
+  };
   //Sum
-  vector3D operator+ (vector3D v2);
-  void operator+=(vector3D v2);
+  vector3D& operator+=(vector3D V){
+    this->X = this->X + V.X;
+    this->Y = this->Y + V.Y;
+    this->Z = this->Z + V.Z;
+    return *this;
+  };
+  vector3D operator+(vector3D V){
+    vector3D total;
+    total.X = this->X + V.X;
+    total.Y = this->Y + V.Y;
+    total.Z = this->Z + V.Z;
+    return total;
+  };
   //Substraction
-  vector3D operator- (vector3D v2);
-  void operator-=(vector3D v2);
+  vector3D& operator-=(vector3D V){
+    this->X = this->X - V.X;
+    this->Y = this->Y - V.Y;
+    this->Z = this->Z - V.Z;
+    return *this;
+  };
+  vector3D operator-(vector3D V){
+    vector3D total;
+    total.X = this->X - V.X;
+    total.Y = this->Y - V.Y;
+    total.Z = this->Z - V.Z;
+    return total;
+  };
   //Scalar multiplication
-  vector3D operator* (double a);
-  void operator*=(double a);
-  friend vector3D operator* (double a,vector3D v1);	
+  vector3D& operator*=(double a){
+    this->X = this->X*a;
+    this->Y = this->Y*a;
+    this->Z = this->Z*a;
+    return *this;
+  };
+  vector3D operator*(double a){
+    vector3D total;
+    total.X = this->X*a;
+    total.Y = this->Y*a;
+    total.Z = this->Z*a;
+    return total;
+  };
+  friend vector3D operator*(double a, vector3D V);	
   //Scalar division
-  vector3D operator/ (double a);
-  void operator/=(double a);
+  vector3D& operator/=(double a){
+    this->X = this->X/a;
+    this->Y = this->Y/a;
+    this->Z = this->Z/a;
+    return *this;
+  };
+  vector3D operator/(double a){
+    vector3D total;
+    total.X = this->X/a;
+    total.Y = this->Y/a;
+    total.Z = this->Z/a;
+    return total;
+  };
   //Dot product
-  double operator* (vector3D v2);
+  double operator*(vector3D V){
+    return this->X*V.X+this->Y*V.Y+this->Z*V.Z;
+  };
   //Cross product
-  vector3D operator^ (vector3D v2);
+  vector3D operator^(vector3D V){
+    vector3D total;
+    total.X = this->Y*V.Z-this->Z*V.Y;
+    total.Y = this->Z*V.X-this->X*V.Z;
+    total.Z = this->X*V.Y-this->Y*V.X;
+    return total;
+  };
   //Norm operations
-  double norm2(void);    
-  double norm(void);
+  double norm2(void){
+    return this->X*this->X+this->Y*this->Y+this->Z*this->Z;
+  };    
+  double norm(void){
+    return std::sqrt(this->X*this->X+this->Y*this->Y+this->Z*this->Z);
+  };
+  friend double norm2(vector3D V);
+  friend double norm(vector3D V);
   //Angle between two vectors
+  double angle(vector3D V){
+    return std::acos((this->X*V.X+this->Y*V.Y+this->Z*V.Z)/(std::sqrt(this->X*this->X+this->Y*this->Y+this->Z*this->Z)*std::sqrt(V.X*V.X+V.Y*V.Y+V.Z*V.Z)));
+  };
   friend double angle(vector3D v1, vector3D v2);
-
-  friend class matrix3D;
+  //Make Unitary vector
+  void unit(void){
+    double N = this->norm();
+    this->X=this->X/N;
+    this->Y=this->Y/N;
+    this->Z=this->Z/N;
+  };
+  friend vector3D unit(vector3D V);
 };
-//--------------------------------------
-//  vector class functions 
-//--------------------------------------
-//Initialize the vector
-void vector3D::load(double x0, double y0, double z0){
-  X=x0; Y=y0; Z=z0;
+vector3D operator*(double a, vector3D V){
+  V.X = V.X*a;
+  V.Y = V.Y*a;
+  V.Z = V.Z*a;
+  return V;
 }
-//Show the vector
-void vector3D::show(void){
-  std::cout << "(" <<X<< "," <<Y<< "," <<Z<< ")\n";
-}
-//-------------------------
-//Vectorial operators
-//-------------------------
-//Equal
-void vector3D::operator=(vector3D v2){
-  X=v2.X;
-  Y=v2.Y;
-  Z=v2.Z;
-}
-//Sum
-vector3D vector3D::operator+(vector3D v2){
-  vector3D total;
-  total.X = X + v2.X;
-  total.Y = Y + v2.Y;
-  total.Z = Z + v2.Z;
-  return total;
-}
-void vector3D::operator+=(vector3D v2){
-  X = X + v2.X;
-  Y = Y + v2.Y;
-  Z = Z + v2.Z;
-}
-//Substraction
-vector3D vector3D::operator-(vector3D v2){
-  vector3D total;
-  total.X = X - v2.X;
-  total.Y = Y - v2.Y;
-  total.Z = Z - v2.Z;
-  return total;
-}
-void vector3D::operator-=(vector3D v2){
-  X = X - v2.X;
-  Y = Y - v2.Y;
-  Z = Z - v2.Z;
-}
-//Scalar multiplication
-vector3D vector3D::operator*(double a){
-  vector3D total;
-  total.X = X*a;
-  total.Y = Y*a;
-  total.Z = Z*a;
-  return total;
-}
-vector3D operator*(double a,vector3D v1){
-  v1.X = v1.X*a;
-  v1.Y = v1.Y*a;
-  v1.Z = v1.Z*a;
-  return v1;
-}
-void vector3D::operator*=(double a){
-  X = X*a;
-  Y = Y*a;
-  Z = Z*a;
-}
-//Scalar division
-vector3D vector3D::operator/(double a){
-  vector3D total;
-  total.X = X/a;
-  total.Y = Y/a;
-  total.Z = Z/a;
-  return total;
-}
-void vector3D::operator/=(double a){ 
-  X = X/a;
-  Y = Y/a;
-  Z = Z/a;
-}
-//Dot product
-double vector3D::operator*(vector3D v2){
-  return X*v2.X+Y*v2.Y+Z*v2.Z;
-}
-//Cross product
-vector3D vector3D::operator^(vector3D v2){
-  vector3D total;
-  total.X = Y*v2.Z-Z*v2.Y;
-  total.Y = Z*v2.X-X*v2.Z;
-  total.Z = X*v2.Y-Y*v2.X;
-  return total;
-}
-//Norm operations
-double vector3D::norm2(void){ 
-  return X*X+Y*Y+Z*Z;
-}
-double vector3D::norm(void){
-  return std::sqrt(X*X+Y*Y+Z*Z);
+double norm2(vector3D V){
+  return V.X*V.X+V.Y*V.Y+V.Z*V.Z;
+} 
+double norm(vector3D V){
+  return std::sqrt(V.X*V.X+V.Y*V.Y+V.Z*V.Z);
 }
 //Angle between two vectors
-double angle(vector3D v1, vector3D v2)
-{
+double angle(vector3D v1, vector3D v2){
   return std::acos((v1.X*v2.X+v1.Y*v2.Y+v1.Z*v2.Z)/(std::sqrt(v1.X*v1.X+v1.Y*v1.Y+v1.Z*v1.Z)*std::sqrt(v2.X*v2.X+v2.Y*v2.Y+v2.Z*v2.Z)));
 }
-
-//clase de matrices amiga de vectores para definir producto por escalar
-class matrix3D{
-private:
-  double a11,a12,a13,a21,a22,a23,a31,a32,a33;
-
-public:
-  //initialize of matrix
-  void load(double A11,double A12,double A13,double A21,double A22,double A23,double A31,double A32,double A33);
-  //Show the matrix
-  void show(void);
-  //operation prod by vector
-  vector3D operator*(vector3D v);
-};
-//implementaciones de la clase matrix3D
-
-//initilize the matix
-void matrix3D::load(double A11,double A12,double A13,double A21,double A22,double A23,double A31,double A32,double A33){
-  a11=A11;a12=A12;a13=A13;
-  a21=A21;a22=A22;a23=A23;
-  a31=A31;a32=A32;a33=A33;
-}
-
-//show the matrix
-void matrix3D::show(void){
-  std::cout<<"("<<a11<<","<<a12<<","<<a13<<")"<<"\n";
-  std::cout<<"("<<a21<<","<<a22<<","<<a23<<")"<<"\n";
-  std::cout<<"("<<a31<<","<<a32<<","<<a33<<")"<<"\n";
-}
-
-//multiplication by vector
-vector3D matrix3D::operator*(vector3D v){
-  vector3D prod;
-  double v1=a11*v.X+a12*v.Y+a13*v.Z;
-  double v2=a21*v.X+a22*v.Y+a23*v.Z;
-  double v3=a31*v.X+a32*v.Y+a33*v.Z;
-
-  prod.load(v1,v2,v3);
-
-  return prod;
+vector3D unit(vector3D V){
+  vector3D total;
+  double N = V.norm();
+  total.X=V.X/N;
+  total.Y=V.Y/N;
+  total.Z=V.Z/N;
+  return total;
 }
