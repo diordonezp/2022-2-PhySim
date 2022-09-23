@@ -57,7 +57,7 @@ void Cuerpo::Dibujese(bool p, int lt){
 
 //-----------  Programa Principal --------------
 int main(void){
-  ifstream fin("f_piladearena.txt");
+  ifstream fin("f_piladearena(seed2).txt");
   int N;fin>> N;
   std::vector<Cuerpo> syst(N);
 

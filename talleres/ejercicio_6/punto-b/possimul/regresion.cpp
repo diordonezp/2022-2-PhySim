@@ -59,7 +59,7 @@ void Cuerpo::Dibujese(bool p, int lt){
 //----------------- Funciones de Animacion ----------
 void InicieAnimacion(void){
   cout<<"set terminal pdf"<<endl; 
-  cout<<"set output 'regresion.pdf'"<<endl;
+  cout<<"set output 'regresion(seed2).pdf'"<<endl;
   cout<<"unset key"<<endl;
   cout<<"set xrange[-1:"<<Lx+1<<"]"<<endl;
   cout<<"set yrange[-1:"<<Ly+1<<"]"<<endl;
@@ -81,7 +81,7 @@ void TermineCuadro(void){
 
 //-----------  Programa Principal --------------
 int main(){
-  ifstream fin("f_piladearena.txt");
+  ifstream fin("f_piladearena(seed2).txt");
   int N;fin>> N;
   std::vector<Cuerpo> syst(N);
   std::vector<Cuerpo> piso(Ns);
