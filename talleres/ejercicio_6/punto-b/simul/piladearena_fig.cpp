@@ -1,8 +1,9 @@
 // Simular el movimiento de N moleculas en un gas 2D
 #include <iostream>
+#include <fstream>
 #include <cmath>
-#include "vector.h"
-#include "Random64.h"
+#include "../../vector.h"
+#include "../../Random64.h"
 using namespace std;
 
 //---- declarar constantes ---
@@ -37,6 +38,8 @@ public:
   void Dibujese(bool p,int lt);
   double Getx(void){return r.x();}; //inline
   double Gety(void){return r.y();}; //inline
+  double GetR(void){return R;}; //inline
+  double Getheta(void){return theta;}; //inline
   friend class Colisionador;
 };
 void Cuerpo::Inicie(double x0,double y0,double Vx0,double Vy0,
@@ -136,47 +139,24 @@ void Colisionador::CalculeFuerzaEntre(Cuerpo & Grano1,Cuerpo & Grano2
   s_old=s;
 }
 
-//----------------- Funciones de Animacion ----------
-void InicieAnimacion(void){
-  cout<<"set terminal gif animate"<<endl; 
-  cout<<"set output 'piladearena.gif'"<<endl;
-  cout<<"unset key"<<endl;
-  cout<<"set xrange[-1:"<<Lx+1<<"]"<<endl;
-  cout<<"set yrange[-1:"<<Ly+1<<"]"<<endl;
-  cout<<"set size ratio -1"<<endl;
-  cout<<"set parametric"<<endl;
-  cout<<"set trange [0:7]"<<endl;
-  cout<<"set isosamples 12"<<endl;
-  //cout<<"set terminal dumb"<<endl; 
-}
-void InicieCuadro(void){
-    cout<<"plot 0,0 ";
-    cout<<" , "<<Lx/7<<"*t,"<<Ly;     //pared de arriba
-    cout<<" , 0,"<<Ly/7<<"*t";        //pared de la izquierda
-    cout<<" , "<<Lx<<","<<Ly/7<<"*t"; //pared de la derecha
-}
-void TermineCuadro(void){
-    cout<<endl;
-}
-
-//-----------  Programa Principal --------------  
+//-----------  Programa Principal --------------
 int main(void){
   Cuerpo Grano[Ntot];
   Colisionador Hertz; Hertz.Inicie();
-  Crandom Ran64(1);
-  Crandom ran64(1);
+  Crandom Ran64(2);
+  Crandom ran64(2);
   double m0=1, R0=2;
   int i,Nlive;
-  double cuadros=5,t,tdibujo,dt=1e-3,tmax=cuadros*sqrt(Ly/g),tcuadro=tmax/(10*cuadros);
+  double cuadros=5,t,tdibujo,dt=1e-3,tmax=cuadros*sqrt(Ly/g),tcuadro=tmax/(4*cuadros);
   double Omega0,OmegaMax=8.0;
-
+  
   //Inicializar las paredes
   double Rpared=100*Lx, Mpared=100*m0, Rs=Lx/(2.0*Ns);
   //------------------(  x0,       y0,Vx0,Vy0,theta0,omega0,m0,R0)
   Grano[N+Ns+0].Inicie(Lx/2,Ly+Rpared,  0,  0,     0,     0,Mpared,Rpared); //Pared de arriba
   Grano[N+Ns+1].Inicie(Lx+Rpared,Ly/2,  0,  0,     0,     0,Mpared,Rpared); //Pared derecha
   Grano[N+Ns+2].Inicie(  -Rpared,Ly/2,  0,  0,     0,     0,Mpared,Rpared); //Pared izquierda
-
+  
   //Inicializar el suelo de granitos
   for(i=N;i<N+Ns;i++){
     Grano[i].Inicie((1+2*(i-N))*Rs,0.0,0.0,0.0,0.0,0.0,m0,Rs);
@@ -189,22 +169,8 @@ int main(void){
     Grano[i].Inicie(Lx/2,Ly-2*R0,  0,  0,     0,Omega0,m0,R0);//OJO
   }
   
-  InicieAnimacion(); //Dibujar
-  for(Nlive=1;Nlive<N+1;Nlive++){
-    for(t=0,tdibujo=0 ; t<tmax; t+=dt,tdibujo+=dt){
-      //Dibujar
-      if(tdibujo>tcuadro){
-	
-	InicieCuadro();
-	for(i=0;i<Nlive+1;i++) Grano[i].Dibujese(false,0);
-	for(i=N;i<N+Ns;i++){
-	  Grano[i].Dibujese(true,10);
-	}
-	TermineCuadro();
-	
-	tdibujo=0;
-      }
-      
+  for(Nlive=1;Nlive<N;Nlive++){
+    for(t=0; t<tmax; t+=dt){
       //--- Muevase por PEFRL ---
       for(i=0;i<Nlive;i++)Grano[i].Mueva_r(dt,epsilon);
       Hertz.CalculeFuerzas(Grano,dt,Nlive);
@@ -221,6 +187,30 @@ int main(void){
       for(i=0;i<Nlive;i++)Grano[i].Mueva_r(dt,epsilon); 
     }   
   }
+  Nlive=N;
   
-  return 0;
+  for(t=0; t<2*tmax; t+=dt){   
+    //--- Muevase por PEFRL ---
+    for(i=0;i<Nlive;i++)Grano[i].Mueva_r(dt,epsilon);
+    Hertz.CalculeFuerzas(Grano,dt,Nlive);
+    for(i=0;i<Nlive;i++)Grano[i].Mueva_V(dt,lambda2);
+    for(i=0;i<Nlive;i++)Grano[i].Mueva_r(dt,chi);
+    Hertz.CalculeFuerzas(Grano,dt,Nlive);
+    for(i=0;i<Nlive;i++)Grano[i].Mueva_V(dt,lambda);
+    for(i=0;i<Nlive;i++)Grano[i].Mueva_r(dt,chiepsilon);
+    Hertz.CalculeFuerzas(Grano,dt,Nlive);
+    for(i=0;i<Nlive;i++)Grano[i].Mueva_V(dt,lambda);
+    for(i=0;i<Nlive;i++)Grano[i].Mueva_r(dt,chi);
+    Hertz.CalculeFuerzas(Grano,dt,Nlive);
+    for(i=0;i<Nlive;i++)Grano[i].Mueva_V(dt,lambda2);
+    for(i=0;i<Nlive;i++)Grano[i].Mueva_r(dt,epsilon); 
   }
+
+  ofstream fout("../possimul/f_piladearena(seed2).txt");
+  fout<<N<<"\n";
+  for(i=0;i<N;i++){
+    fout<<Grano[i].Getx()<<"\t"<<Grano[i].Gety()<<"\t"<<Grano[i].Getheta()<<"\t"<<Grano[i].GetR()<<"\n";
+  }
+  fout.close();
+  return 0;
+}
