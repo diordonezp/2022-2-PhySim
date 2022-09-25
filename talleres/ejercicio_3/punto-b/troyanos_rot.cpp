@@ -36,6 +36,7 @@ public:
   void printr();
   void printv();
   void printF();
+  void dibujese();
 
   friend class Colisionador;
 };
@@ -59,6 +60,10 @@ void Cuerpo::printv(){
 
 void Cuerpo::printF(){
   std::cout<<F.x()<<"\t"<<F.y()<<"\t"<<F.z()<<"\t";
+}
+
+void Cuerpo::dibujese(){
+  std::cout<<" , "<<r.x()<<"+"<<R<<"*cos(2*pi*t),"<<r.y()<<"+"<<R<<"*sin(2*pi*t)";
 }
 
 //-----------------------------------------------------------------------------------
@@ -141,6 +146,28 @@ void Colisionador::Paso_syst(std::vector<Cuerpo> &syst,double dt,double omega){
     syst[i].r+=Xi*dt*syst[i].v;
   }
 }
+//----------------------------------------------------------------------------------
+//funciones de graficación
+void set_graph(){
+  std::cout<<"set terminal pdf\n";
+  std::cout<<"set output 'troyanos_rot.pdf'\n";
+  std::cout<<"unset key\n";
+  std::cout<<"set size ratio -1\n";
+  std::cout<<"set xrange[-100:1100]\n";
+  std::cout<<"set yrange[-100:100]\n";
+  std::cout<<"set parametric\n";
+  std::cout<<"set trange[0:1]\n";
+  std::cout<<"set isosamples 12\n";
+}
+
+void init_graph(){
+  std::cout<<"plot 0,0";
+}
+
+void end_graph(){
+  std::cout<<"\n";
+}
+
 
 //-----------------------------------------------------------------------------------
 
@@ -158,18 +185,31 @@ int main(){
   double x1=m0*r0/M;
   omega=std::sqrt(G*M*pow(r0,-3));
   T=2*M_PI/omega;
+
+  //condiciones de graficación
+  double tgraph=T;
+  double taux;
+    
   
   //----------(x0,y0,z0,Vx0,Vy0,Vz0,m0,R0)
-  syst[0].Init( x0, 0.0, 0.0, 0.0, 0.0, 0.0, m0, 0.15);
-  syst[1].Init( x1, 0.0, 0.0, 0.0, 0.0, 0.0, m1, 0.15);
+  syst[0].Init( x0, 0.0, 0.0, 0.0, 0.0, 0.0, m0, 50);
+  syst[1].Init( x1, 0.0, 0.0, 0.0, 0.0, 0.0, m1, 25);
+
   
-  for(double t=0;t<20*T;t+=dt){
-    for(int i=0;i<syst.size();i++){
-      syst[i].printr();
+  set_graph();
+  init_graph();
+
+  for(double t=0,taux=0;t<20*T;t+=dt,taux+=dt){
+    if(taux>tgraph){
+      for(int i=0;i<syst.size();i++){
+	syst[i].dibujese();
+      }
+      taux=0;
     }
-    std::cout<<"\n";
     Gravity.Paso_syst(syst,dt,omega);
   }
+  
+  end_graph();
   
   return 0;
 }
