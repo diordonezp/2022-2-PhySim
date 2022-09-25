@@ -163,8 +163,8 @@ void TermineCuadro(void){
 int main(void){
   Cuerpo Grano[Ntot];
   Colisionador Hertz; Hertz.Inicie();
-  Crandom Ran64(2);
-  Crandom ran64(2);
+  Crandom Ran64(1);
+  Crandom ran64(1);
   double m0=1, R0=2;
   int i,Nlive;
   double cuadros=5,t,tdibujo,dt=1e-3,tmax=cuadros*sqrt(Ly/g),tcuadro=tmax/(4*cuadros);

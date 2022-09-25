@@ -59,7 +59,7 @@ void Cuerpo::Dibujese(bool p, int lt){
 //----------------- Funciones de Animacion ----------
 void InicieAnimacion(void){
   cout<<"set terminal pdf"<<endl; 
-  cout<<"set output 'regresion(seed2).pdf'"<<endl;
+  cout<<"set output 'regresion(seed1).pdf'"<<endl;
   cout<<"unset key"<<endl;
   cout<<"set xrange[-1:"<<Lx+1<<"]"<<endl;
   cout<<"set yrange[-1:"<<Ly+1<<"]"<<endl;
@@ -69,7 +69,7 @@ void InicieAnimacion(void){
   cout<<"set isosamples 12"<<endl;
   //cout<<"set terminal dumb"<<endl; 
 }
-void InicieCuadro(void){
+void InicieCuadro(){
     cout<<"plot 0,0 ";
     cout<<" , "<<Lx/7<<"*t,"<<Ly;     //pared de arriba
     cout<<" , 0,"<<Ly/7<<"*t";        //pared de la izquierda
@@ -79,9 +79,14 @@ void TermineCuadro(void){
   cout<<endl;
 }
 
+void DibujePerfil(double xm,double m1,double b1,double m2,double b2){
+  cout<<" , "<<xm/7<<"*t,"<<xm/7<<"*"<<m1<<"*t+"<<b1<<"lt 7 lw 4 dt 2"; //recta izquierda
+  cout<<" , "<<(Lx-xm)/7<<"*t+"<<xm<<",("<<(Lx-xm)/7<<"*t+"<<xm<<")*"<<m2<<"+"<<b2<<"lt 7 lw 4 dt 2"; //recta derecha
+}
+
 //-----------  Programa Principal --------------
 int main(){
-  ifstream fin("f_piladearena(seed2).txt");
+  ifstream fin("f_piladearena(seed1).txt");
   int N;fin>> N;
   std::vector<Cuerpo> syst(N);
   std::vector<Cuerpo> piso(Ns);
@@ -109,6 +114,9 @@ int main(){
   for(int i=0;i<piso.size();i++){
     piso[i].Dibujese(true,10);
   }
+  DibujePerfil(73.9838,
+	       0.4976809013169031,-5.618484645941452,
+	       -0.41560788043650526,67.81055984732696);
   TermineCuadro();
   
   return 0;

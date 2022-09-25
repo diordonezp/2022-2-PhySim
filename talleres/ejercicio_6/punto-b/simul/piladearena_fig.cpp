@@ -143,8 +143,8 @@ void Colisionador::CalculeFuerzaEntre(Cuerpo & Grano1,Cuerpo & Grano2
 int main(void){
   Cuerpo Grano[Ntot];
   Colisionador Hertz; Hertz.Inicie();
-  Crandom Ran64(2);
-  Crandom ran64(2);
+  Crandom Ran64(1);
+  Crandom ran64(1);
   double m0=1, R0=2;
   int i,Nlive;
   double cuadros=5,t,tdibujo,dt=1e-3,tmax=cuadros*sqrt(Ly/g),tcuadro=tmax/(4*cuadros);
@@ -206,7 +206,7 @@ int main(void){
     for(i=0;i<Nlive;i++)Grano[i].Mueva_r(dt,epsilon); 
   }
 
-  ofstream fout("../possimul/f_piladearena(seed2).txt");
+  ofstream fout("../possimul/f_piladearena(seed1).txt");
   fout<<N<<"\n";
   for(i=0;i<N;i++){
     fout<<Grano[i].Getx()<<"\t"<<Grano[i].Gety()<<"\t"<<Grano[i].Getheta()<<"\t"<<Grano[i].GetR()<<"\n";
