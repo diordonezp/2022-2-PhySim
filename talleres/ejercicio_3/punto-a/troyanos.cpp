@@ -70,7 +70,7 @@ void Cuerpo::printF(){
 
 class Colisionador{
 public:
-  //calcula y asiga a cada cuerpo del sistema la fuerza que debe sentir
+  //calcula y asigna a cada cuerpo del sistema la fuerza que debe sentir
   void Fuerza_syst(std::vector<Cuerpo> &syst);
   //calcula solo la fuerza entre dos cuerpos del sistema
   void F_entre(Cuerpo &c1,Cuerpo &c2);

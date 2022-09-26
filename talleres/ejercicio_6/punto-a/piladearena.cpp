@@ -138,8 +138,8 @@ void Colisionador::CalculeFuerzaEntre(Cuerpo & Grano1,Cuerpo & Grano2
 
 //----------------- Funciones de Animacion ----------
 void InicieAnimacion(void){
-  //cout<<"set terminal gif animate"<<endl; 
-  //cout<<"set output 'piladearena-a(1).gif'"<<endl;
+  cout<<"set terminal gif animate"<<endl; 
+  cout<<"set output 'piladearena(seed1).gif'"<<endl;
   cout<<"unset key"<<endl;
   cout<<"set xrange[-1:"<<Lx+1<<"]"<<endl;
   cout<<"set yrange[-1:"<<Ly+1<<"]"<<endl;
