@@ -208,7 +208,7 @@ int main(void){
     for(i=0;i<Nlive;i++)Grano[i].Mueva_r(dt,epsilon); 
   }
 
-  ofstream fout("../possimul/f_piladearena(seed2).txt");
+  ofstream fout("../possimul/f_piladearena(seed1R).txt");
   fout<<N<<"\n";
   for(i=0;i<N;i++){
     fout<<Grano[i].Getx()<<"\t"<<Grano[i].Gety()<<"\t"<<Grano[i].Getheta()<<"\t"<<Grano[i].GetR()<<"\n";
