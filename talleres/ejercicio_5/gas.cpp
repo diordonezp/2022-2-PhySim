@@ -230,7 +230,7 @@ void Init_animation(double lx,double ly){
   std::cout<<"set parametric\n";
   std::cout<<"set trange[0:1]\n";
   std::cout<<"set isosamples 20\n";
-  //std::cout<<"set terminal dumb 74 37\n";
+  std::cout<<"set terminal dumb 74 37\n";
 }
 
 void Init_frame(double lx,double ly){
@@ -239,17 +239,17 @@ void Init_frame(double lx,double ly){
 }
 
 void End_frame(){
-  std::cout<<"\n";
+  std::cout<<"\npause 0.1\n";
 }
 
 int main(){
   /*---variables de simulación---*/
-  int Nx=1;               //número de cuerpos en la primera fila x
-  int Ny=1;               //número de cuerpos en la primera fila y
+  int Nx=2;               //número de cuerpos en la primera fila x
+  int Ny=2;               //número de cuerpos en la primera fila y
   int N=Nx*Ny;            //número de cuerpos totales
   double t=0;             //tiempo inicial
   double tmax=30;         //tiempo final
-  double dt=1e-4;         //paso de tiempo
+  double dt=1e-5;         //paso de tiempo
   double m=1;             //masa de los cuerpos
   double R=2;             //radio de los cuerpos
   double lx=(2*Nx+1)*2*R; //lado x de la caja
@@ -257,7 +257,7 @@ int main(){
   
   /*---variables de animación---*/
   double t1=0;        //timepo auxiliar
-  double t_frame=0.01; //tiempo entres frames
+  double t_frame=0.1; //tiempo entres frames
 
   /*---variables de inicialización de la simulación---*/
   std::vector<Cuerpo> syst(N+4);
